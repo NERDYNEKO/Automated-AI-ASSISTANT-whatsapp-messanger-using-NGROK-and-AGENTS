@@ -1,0 +1,336 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.messages[0].text.body }}",
+        "options": {
+          "systemMessage": "You are the AI assistant of Nabonita Roy, a final-year B.Tech CSE (AI & ML) student\nand AI/ML engineer. Speak in a friendly, professional tone, in short WhatsApp-style messages.\n\nWhen someone says hi or asks for help, reply with this menu:\n1. About Nabonita and her projects\n2. Book a call\n3. Service request (hire her for a project or internship)\n4. Connect locally\n5. Get resume and links\n\nFACTS (answer only from these, never invent anything):\n- Published patent: AI-Powered Sign Language Communication System\n- AIR 8, National Entrepreneurship Challenge, IIT Bombay\n- Internships: Infosys Springboard (AI), Google for Developers (AICTE)\n- Projects: RAG assistant (LangChain), TumorVision (CNN, 95% accuracy),\n  Livestock Image Recognition (92%), this WhatsApp AI agent built with n8n\n- Skills: Python, TensorFlow, PyTorch, OpenCV, LangChain, GCP\n- GitHub: https://github.com/NERDYNEKO\n- Resume: https://drive.google.com/file/d/1ZfJAseGN_DVJ1-QF198KDkQ772Gvw2-P/view?usp=sharing\n\nBEHAVIOR:\n- Option 2 (Book a call): ask one question at a time for their name, preferred day and\n  time, and what the call is about. When you have all three, log it with the Append Row\n  tool and reply \"Thanks, I've noted your request and Nabonita will confirm the time soon.\"\n- Option 3 (Service request): ask one question at a time: name, organization,\n  what they need, and timeline. When you have all four, log it with the Append Row tool\n  and reply \"Thanks, I've passed this to Nabonita and she'll reply soon.\"\n- Option 4 (Connect locally): ask where they are and what they want to connect about\n  (meetup, collaboration, mentoring, referral), then log it with the Append Row tool.\n- Option 5 (Resume and links): share the resume link and GitHub link above.\n- If you don't know something, say \"I'll pass that to Nabonita\" and log it."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "16eb8837-dd52-457e-b3fb-9b91917bda15",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {
+          "maxOutputTokens": 2048
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        96,
+        224
+      ],
+      "id": "71bc0ab2-a91b-4b51-92de-667bd57cf34e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ZREePfdJ03lE9pRy",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        240
+      ],
+      "id": "ab7f1404-2bd9-459e-96b9-19ecbfda686d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8",
+          "mode": "list",
+          "cachedResultName": "Nabonita_AI_Assistant_Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1740843129,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8/edit#gid=1740843129"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "phone",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', ``, 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        336
+      ],
+      "id": "7b234b83-e568-4b24-ac40-f14fbe61e73f",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcGu6Xa5R70fAd6J",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8",
+          "mode": "list",
+          "cachedResultName": "Nabonita_AI_Assistant_Sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1740843129,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10wlpyO8IziPy7yQRHEgYGkSl3Utj6AQYJC5Gq5UP5_8/edit#gid=1740843129"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('timestamp', ``, 'string') }}",
+            "phone": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('phone', ``, 'string') }}",
+            "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('name', ``, 'string') }}",
+            "type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('type', ``, 'string') }}",
+            "organization": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('organization', ``, 'string') }}",
+            "details": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('details', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "organization",
+              "displayName": "organization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "details",
+              "displayName": "details",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        880,
+        320
+      ],
+      "id": "aee3a19f-ca41-4cb1-a211-e89e9762f477",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "hcGu6Xa5R70fAd6J",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        16
+      ],
+      "id": "1aaf5849-61fa-4fdd-b4ec-afcf4b202ad6",
+      "name": "WhatsApp Trigger",
+      "webhookId": "6b2abb74-d9c9-4d78-8c4c-f8c25b898df9",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "YhdUEgGjXbPBaHSV",
+          "name": "WhatsApp OAuth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "1332652899929675",
+        "recipientPhoneNumber": "={{ $('WhatsApp Trigger').item.json.messages[0].from }}",
+        "textBody": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        0
+      ],
+      "id": "48e73dd7-8e5d-45a0-a155-799c391604a1",
+      "name": "Send message and wait for response",
+      "webhookId": "edbacc01-ad97-4b89-a16a-0142e9f567c8",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "MKfTOL70fZRSdrtc",
+          "name": "WhatsApp account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "ac7cb8b5-7c8a-496d-b5f7-b8f9ecb644d5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee46d4d3f0a7ff8428e529827a49acdbd108ea405dffb5feb5471ff93ee22588"
+  },
+  "id": "Dy52XXGOOJheo-8Thf_iB",
+  "tags": []
+}
